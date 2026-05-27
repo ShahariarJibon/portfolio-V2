@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { LogOut, Mail, Globe, Monitor, Clock } from "lucide-react";
+import NotificationBell from "@/components/NotificationBell";
 
 export default function AdminDashboard() {
   const [messages, setMessages] = useState([]);
@@ -59,14 +60,17 @@ export default function AdminDashboard() {
               {messages.length} message{messages.length !== 1 ? "s" : ""} received
             </p>
           </div>
-          <motion.button
-            onClick={handleLogout}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-white/10 text-[#888888] text-xs tracking-[0.15em] uppercase hover:border-white/30 hover:text-white transition-all"
-            whileHover={{ scale: 1.02 }}
-          >
-            <LogOut size={14} />
-            Logout
-          </motion.button>
+          <div className="flex items-center gap-3">
+            <NotificationBell />
+            <motion.button
+              onClick={handleLogout}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-white/10 text-[#888888] text-xs tracking-[0.15em] uppercase hover:border-white/30 hover:text-white transition-all"
+              whileHover={{ scale: 1.02 }}
+            >
+              <LogOut size={14} />
+              Logout
+            </motion.button>
+          </div>
         </div>
 
         {loading ? (
