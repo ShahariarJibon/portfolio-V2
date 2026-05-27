@@ -1,5 +1,7 @@
 # Portfolio V2 — Shahariar Hossain
 
+view online https://portfolio-v2-c6twpugjw-shahariarjibons-projects.vercel.app
+
 A premium full-stack developer portfolio built with Next.js, Tailwind CSS, and Framer Motion. Features a cinematic black-and-white editorial aesthetic with an admin panel for managing contact messages.
 
 ## Tech Stack
