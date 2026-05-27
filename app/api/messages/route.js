@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { getSupabase } from "@/lib/supabase";
 import { validateToken } from "@/lib/auth";
 
 export async function GET(request) {
@@ -12,6 +12,7 @@ export async function GET(request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const supabase = getSupabase();
     const { data, error } = await supabase
       .from("messages")
       .select("*")

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { getSupabase } from "@/lib/supabase";
 
 export async function POST(request) {
   try {
@@ -19,6 +19,7 @@ export async function POST(request) {
 
     const userAgent = request.headers.get("user-agent") || "unknown";
 
+    const supabase = getSupabase();
     const { data, error } = await supabase.from("messages").insert([
       {
         name,
