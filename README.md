@@ -1,6 +1,5 @@
 # Portfolio V2 — Shahariar Hossain
 
-view online https://portfolio-v2-c6twpugjw-shahariarjibons-projects.vercel.app
 
 A premium full-stack developer portfolio built with Next.js, Tailwind CSS, and Framer Motion. Features a cinematic black-and-white editorial aesthetic with an admin panel for managing contact messages.
 
@@ -70,6 +69,6 @@ CREATE TABLE messages (
 
 ## Links
 
-- **Live:** [shahariarhossain.com](https://shahariarhossain.com)
+- **Live:** [shahariarhossain.com][(https://shahariarhossain.com)](https://portfolio-v2-c6twpugjw-shahariarjibons-projects.vercel.app)
 - **GitHub:** [ShahariarJibon](https://github.com/ShahariarJibon)
 - **LinkedIn:** [Shahariar Hossain](https://www.linkedin.com/in/shahariar-hossain-427a81404/)
