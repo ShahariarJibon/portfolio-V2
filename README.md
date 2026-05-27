@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Portfolio V2 — Shahariar Hossain
+
+A premium full-stack developer portfolio built with Next.js, Tailwind CSS, and Framer Motion. Features a cinematic black-and-white editorial aesthetic with an admin panel for managing contact messages.
+
+## Tech Stack
+
+- **Framework:** Next.js 16 (Turbopack)
+- **Styling:** Tailwind CSS
+- **Animation:** Framer Motion, Lenis (smooth scroll)
+- **Database:** Supabase (contact messages)
+- **Fonts:** Playfair Display, Sora, DM Sans, JetBrains Mono
+- **Icons:** Lucide React
+
+## Features
+
+- Cinematic hero with parallax and B&W filter
+- Liquid glass navbar with scroll-driven blur
+- Animated about, skills, projects, experience sections
+- Contact form with Supabase persistence
+- Password-protected admin dashboard at `/admin`
+- Film grain overlay, vignette effects
+- Fully responsive
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Environment Variables
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+Copy `.env.example` to `.env.local` and fill in:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
+SUPABASE_SERVICE_KEY=your-service-key
+ADMIN_PASSWORD=your-admin-password
+```
 
-## Learn More
+### Supabase Setup
 
-To learn more about Next.js, take a look at the following resources:
+Create a `messages` table in your Supabase project:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```sql
+CREATE TABLE messages (
+  id BIGSERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  message TEXT NOT NULL,
+  ip TEXT,
+  user_agent TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project Structure
 
-## Deploy on Vercel
+```
+├── app/              # Next.js App Router pages
+│   ├── admin/        # Admin login & dashboard
+│   └── api/          # API routes (contact, admin, messages)
+├── components/       # React components
+├── lib/              # Utilities (Supabase client, auth)
+├── public/images/    # Static assets
+└── .env.local        # Environment variables (gitignored)
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Links
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Live:** [shahariarhossain.com](https://shahariarhossain.com)
+- **GitHub:** [ShahariarJibon](https://github.com/ShahariarJibon)
+- **LinkedIn:** [Shahariar Hossain](https://www.linkedin.com/in/shahariar-hossain-427a81404/)
