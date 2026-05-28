@@ -1,5 +1,6 @@
 import { Sora, DM_Sans, JetBrains_Mono, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from "@/context/AuthContext";
 
 const sora = Sora({
   variable: "--font-heading",
@@ -52,7 +53,7 @@ export default function RootLayout({ children }) {
     >
       <body className="min-h-screen bg-black text-[#f5f5f5] antialiased">
         <div className="film-grain pointer-events-none fixed inset-0 z-[9999] opacity-[0.035]" />
-        {children}
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

@@ -2,19 +2,25 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, User, LogOut } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import AuthModal from "@/components/AuthModal";
 
 const navLinks = [
   { name: "Home", href: "#home" },
   { name: "About", href: "#about" },
   { name: "Skills", href: "#skills" },
   { name: "Projects", href: "#projects" },
+  { name: "Blog", href: "/blog" },
   { name: "Contact", href: "#contact" },
 ];
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const { user, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,13 +30,23 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (!e.target.closest(".user-menu-area")) setShowUserMenu(false);
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
   const handleNavClick = (e, href) => {
-    e.preventDefault();
-    const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-      setIsMobileMenuOpen(false);
+    if (href.startsWith("#")) {
+      e.preventDefault();
+      const element = document.querySelector(href);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
     }
+    setIsMobileMenuOpen(false);
   };
 
   return (
@@ -75,14 +91,68 @@ export default function Navbar() {
                 {link.name}
               </motion.a>
             ))}
+
+            {user ? (
+              <div className="relative ml-4 user-menu-area">
+                <button
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  className="flex items-center gap-2 px-4 py-1.5 text-xs tracking-[0.15em] uppercase text-white rounded-full border border-white/20 hover:bg-white hover:text-black transition-all duration-500"
+                >
+                  <User size={14} />
+                  {user.email.split("@")[0]}
+                </button>
+                <AnimatePresence>
+                  {showUserMenu && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      className="absolute right-0 top-full mt-2 w-40 rounded-xl border border-white/[0.08] bg-[#0a0a0a] shadow-2xl p-2 z-50"
+                    >
+                      <button
+                        onClick={() => { logout(); setShowUserMenu(false); }}
+                        className="flex items-center gap-2 w-full px-3 py-2 text-xs text-[#888888] hover:text-white rounded-lg hover:bg-white/[0.04] transition-colors"
+                      >
+                        <LogOut size={14} /> Sign Out
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ) : (
+              <button
+                onClick={() => setShowAuth(true)}
+                className="ml-4 px-5 py-1.5 text-xs tracking-[0.15em] uppercase text-white rounded-full border border-white/20 hover:bg-white hover:text-black transition-all duration-500"
+              >
+                Join
+              </button>
+            )}
           </div>
 
-          <button
-            className="md:hidden text-white p-2"
-            onClick={() => setIsMobileMenuOpen(true)}
-          >
-            <Menu size={20} />
-          </button>
+          <div className="flex items-center gap-3 md:hidden">
+            {user ? (
+              <button
+                onClick={() => { logout(); }}
+                className="text-[#888888] hover:text-white transition-colors p-2"
+                title="Sign out"
+              >
+                <LogOut size={16} />
+              </button>
+            ) : (
+              <button
+                onClick={() => { setShowAuth(true); setIsMobileMenuOpen(false); }}
+                className="px-4 py-1 text-xs tracking-[0.15em] uppercase text-white rounded-full border border-white/20 hover:bg-white hover:text-black transition-all"
+              >
+                Join
+              </button>
+            )}
+            <button
+              className="text-white p-2"
+              onClick={() => setIsMobileMenuOpen(true)}
+            >
+              <Menu size={20} />
+            </button>
+          </div>
         </div>
       </motion.nav>
 
@@ -133,6 +203,8 @@ export default function Navbar() {
           </>
         )}
       </AnimatePresence>
+
+      <AuthModal open={showAuth} onClose={() => setShowAuth(false)} />
     </>
   );
 }
