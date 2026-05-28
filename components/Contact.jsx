@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Mail, Link, GitBranch, Send, Loader2 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import AuthModal from "@/components/AuthModal";
 
 const FacebookIcon = ({ className, size }) => (
   <svg viewBox="0 0 24 24" fill="currentColor" className={className} width={size} height={size}>
@@ -25,12 +27,21 @@ const socials = [
 ];
 
 export default function Contact() {
+  const { user } = useAuth();
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (user?.email && !formData.email) {
+      setFormData((prev) => ({ ...prev, email: user.email }));
+    }
+  }, [user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!user) { setAuthModalOpen(true); return; }
     setIsSubmitting(true);
     try {
       const res = await fetch("/api/contact", {
@@ -40,7 +51,7 @@ export default function Contact() {
       });
       if (!res.ok) throw new Error("Failed");
       setIsSubmitted(true);
-      setFormData({ name: "", email: "", message: "" });
+      setFormData({ name: "", email: user?.email || "", message: "" });
       setTimeout(() => setIsSubmitted(false), 3000);
     } catch {
       alert("Failed to send message. Please try again.");
@@ -172,6 +183,8 @@ export default function Contact() {
           </motion.div>
         </div>
       </div>
+
+      <AuthModal open={authModalOpen} onClose={() => setAuthModalOpen(false)} />
     </section>
   );
 }
