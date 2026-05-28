@@ -7,6 +7,7 @@ import Link from "next/link";
 import { ArrowLeft, Heart, MessageCircle, Send } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import AuthModal from "@/components/AuthModal";
+import Background3D from "@/components/Background3D";
 
 export default function BlogPost() {
   const { slug } = useParams();
@@ -75,8 +76,9 @@ export default function BlogPost() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-black">
-        <div className="max-w-3xl mx-auto px-6 py-24">
+      <main className="min-h-screen bg-black relative">
+        <Background3D variant="particles" />
+        <div className="max-w-3xl mx-auto px-6 py-24 relative z-10">
           <div className="animate-pulse space-y-6">
             <div className="h-8 w-3/4 bg-white/[0.04] rounded" />
             <div className="h-4 w-1/2 bg-white/[0.04] rounded" />
@@ -103,8 +105,9 @@ export default function BlogPost() {
   const images = blog.cover_images || [];
 
   return (
-    <main className="min-h-screen bg-black">
-      <div className="max-w-3xl mx-auto px-6 py-24">
+    <main className="min-h-screen bg-black relative">
+      <Background3D variant="particles" />
+      <div className="max-w-3xl mx-auto px-6 py-24 relative z-10">
         <Link
           href="/blog"
           className="inline-flex items-center gap-2 text-[#555555] text-xs tracking-[0.15em] uppercase hover:text-white transition-colors mb-12"

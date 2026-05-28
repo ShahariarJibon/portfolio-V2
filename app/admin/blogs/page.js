@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Plus, Edit3, Trash2, Eye, EyeOff, ArrowLeft } from "lucide-react";
+import Background3D from "@/components/Background3D";
 
 export default function AdminBlogs() {
   const [blogs, setBlogs] = useState([]);
@@ -53,8 +54,9 @@ export default function AdminBlogs() {
   if (!authenticated) return null;
 
   return (
-    <div className="min-h-screen bg-black">
-      <div className="max-w-6xl mx-auto px-6 py-10">
+    <div className="min-h-screen bg-black relative">
+      <Background3D variant="wave" />
+      <div className="max-w-6xl mx-auto px-6 py-10 relative z-10">
         <div className="flex items-center justify-between mb-12">
           <div>
             <Link href="/admin/dashboard" className="inline-flex items-center gap-2 text-[#555555] text-xs tracking-[0.15em] uppercase hover:text-white transition-colors mb-4">

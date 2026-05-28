@@ -3,20 +3,54 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Heart, MessageCircle } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import AuthModal from "@/components/AuthModal";
+import Background3D from "@/components/Background3D";
 
 function BlogCard({ blog, index }) {
   const images = blog.cover_images || [];
+  const { user } = useAuth();
+  const [reacted, setReacted] = useState(false);
+  const [reactionCount, setReactionCount] = useState(blog.reaction_count || 0);
+  const [showAuth, setShowAuth] = useState(false);
+  const token = typeof window !== "undefined" ? localStorage.getItem("user_token") : null;
+
+  useEffect(() => {
+    if (user && token) {
+      fetch(`/api/blogs/${blog.slug}/react`)
+        .then((r) => r.json())
+        .then((data) => {
+          const found = (data.reactors || []).some((r) => r.email === user.email);
+          setReacted(found);
+        })
+        .catch(() => {});
+    }
+  }, [user, blog.slug]);
+
+  const toggleReaction = async (e) => {
+    e.preventDefault();
+    if (!user) { setShowAuth(true); return; }
+    const res = await fetch(`/api/blogs/${blog.slug}/react`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (res.ok) {
+      const data = await res.json();
+      setReacted(data.reacted);
+      setReactionCount((c) => (data.reacted ? c + 1 : c - 1));
+    }
+  };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: index * 0.08 }}
-    >
-      <Link href={`/blog/${blog.slug}`} className="block group">
-        <div className="rounded-2xl overflow-hidden border border-white/[0.06] bg-white/[0.02] hover:shadow-[0_0_40px_rgba(255,255,255,0.08)] transition-all duration-500">
-          {/* Cover */}
+    <>
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: index * 0.08 }}
+        className="rounded-2xl overflow-hidden border border-white/[0.06] bg-white/[0.02] hover:shadow-[0_0_40px_rgba(255,255,255,0.08)] transition-all duration-500"
+      >
+        <Link href={`/blog/${blog.slug}`}>
           <div className="h-48 md:h-56 relative overflow-hidden bg-black">
             {images.length > 0 ? (
               <img
@@ -26,40 +60,48 @@ function BlogCard({ blog, index }) {
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
-                <span className="text-7xl font-[family-name:var(--font-heading)] text-white/10 font-bold tracking-tight">
+                <span className="text-7xl font-[family-name:var(--font-heading)] text-white/10 font-bold">
                   {blog.title?.charAt(0)?.toUpperCase() || "B"}
                 </span>
               </div>
             )}
           </div>
+        </Link>
 
-          <div className="p-6">
-            {/* Tag lines */}
+        <div className="p-6">
+          <Link href={`/blog/${blog.slug}`}>
             {(blog.tag_lines || []).length > 0 && (
               <div className="flex flex-wrap gap-2 mb-3">
                 {blog.tag_lines.slice(0, 3).map((tag, i) => (
-                  <span
-                    key={i}
-                    className="px-2.5 py-0.5 border border-white/[0.06] text-[10px] text-[#888888] tracking-wider uppercase"
-                  >
+                  <span key={i} className="px-2.5 py-0.5 border border-white/[0.06] text-[10px] text-[#888888] tracking-wider uppercase">
                     {tag}
                   </span>
                 ))}
               </div>
             )}
-
-            <h3 className="text-xl md:text-2xl font-[family-name:var(--font-heading)] text-white group-hover:text-[#cccccc] transition-colors">
+            <h3 className="text-xl md:text-2xl font-[family-name:var(--font-heading)] text-white hover:text-[#cccccc] transition-colors">
               {blog.title}
             </h3>
-
             <p className="text-[#666666] text-sm mt-3 leading-relaxed line-clamp-3">
               {blog.content?.replace(/<[^>]*>/g, "").slice(0, 200)}
               {(blog.content?.length || 0) > 200 ? "..." : ""}
             </p>
+          </Link>
+
+          <div className="flex items-center gap-4 mt-5 pt-4 border-t border-white/[0.06]">
+            <button onClick={toggleReaction} className={`flex items-center gap-1.5 text-xs transition-colors ${reacted ? "text-[#ef745c]" : "text-[#555555] hover:text-[#888888]"}`}>
+              <Heart size={14} fill={reacted ? "#ef745c" : "none"} />
+              <span>{reactionCount}</span>
+            </button>
+            <Link href={`/blog/${blog.slug}`} className="flex items-center gap-1.5 text-xs text-[#555555] hover:text-[#888888] transition-colors">
+              <MessageCircle size={14} />
+              <span>{blog.comment_count || 0}</span>
+            </Link>
           </div>
         </div>
-      </Link>
-    </motion.div>
+      </motion.div>
+      <AuthModal open={showAuth} onClose={() => setShowAuth(false)} />
+    </>
   );
 }
 
@@ -76,44 +118,26 @@ export default function BlogPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-black">
-      <div className="max-w-7xl mx-auto px-6 py-24">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-16"
-        >
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-[#555555] text-xs tracking-[0.15em] uppercase hover:text-white transition-colors mb-8"
-          >
-            <ArrowLeft size={14} />
-            Back to Portfolio
+    <main className="min-h-screen bg-black relative">
+      <Background3D variant="particles" />
+      <div className="max-w-7xl mx-auto px-6 py-24 relative z-10">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-16">
+          <Link href="/" className="inline-flex items-center gap-2 text-[#555555] text-xs tracking-[0.15em] uppercase hover:text-white transition-colors mb-8">
+            <ArrowLeft size={14} /> Back to Portfolio
           </Link>
-          <h1 className="text-4xl md:text-5xl font-[family-name:var(--font-heading)] text-white">
-            Blog
-          </h1>
+          <h1 className="text-4xl md:text-5xl font-[family-name:var(--font-heading)] text-white">Blog</h1>
           <p className="text-[#888888] text-sm mt-2">Thoughts, notes, and projects</p>
         </motion.div>
 
         {loading ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="h-80 rounded-2xl bg-white/[0.02] border border-white/[0.04] animate-pulse"
-              />
-            ))}
+            {[1, 2, 3].map((i) => <div key={i} className="h-80 rounded-2xl bg-white/[0.02] border border-white/[0.04] animate-pulse" />)}
           </div>
         ) : blogs.length === 0 ? (
-          <div className="text-center py-24">
-            <p className="text-[#555555] text-sm">No blog posts yet</p>
-          </div>
+          <div className="text-center py-24"><p className="text-[#555555] text-sm">No blog posts yet</p></div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {blogs.map((blog, i) => (
-              <BlogCard key={blog.id} blog={blog} index={i} />
-            ))}
+            {blogs.map((blog, i) => <BlogCard key={blog.id} blog={blog} index={i} />)}
           </div>
         )}
       </div>
