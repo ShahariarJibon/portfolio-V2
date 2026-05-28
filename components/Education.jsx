@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { GraduationCap, Award } from "lucide-react";
 
@@ -7,30 +8,23 @@ const education = [
   {
     institution: "Your University",
     degree: "Bachelor of Science in Computer Science",
-    year: "2020 - 2024",
-    achievements: ["Dean&apos;s List", "Tech Club Lead"],
-  },
-];
-
-const achievements = [
-  {
-    icon: Award,
-    title: "Hackathon Winner",
-    description: "First place at TechHacks 2023",
-  },
-  {
-    icon: Award,
-    title: "GitHub Contributor",
-    description: "500+ contributions in 2023",
-  },
-  {
-    icon: Award,
-    title: "SaaS Launch",
-    description: "10,000+ users across products",
+    year: "2025 - Ongoing",
+    achievements: ["Dean's List", "Tech Club Lead"],
   },
 ];
 
 export default function Education() {
+  const [achievements, setAchievements] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/achievements")
+      .then((r) => r.json())
+      .then((data) => setAchievements(data.achievements || []))
+      .catch(() => setAchievements([]))
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <section className="py-24 md:py-32 relative">
       <div className="max-w-7xl mx-auto px-6">
@@ -88,28 +82,42 @@ export default function Education() {
               <Award className="text-[#ef745c]" />
               Key Achievements
             </h3>
-            <div className="space-y-6">
-              {achievements.map((ach, index) => (
-                <motion.div
-                  key={ach.title}
-                  initial={{ opacity: 0, x: 30 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="glass-card rounded-2xl p-6 flex items-start gap-4 hover:border-[#ef745c]/30 transition-colors"
-                >
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#ef745c]/20 to-[#34073d]/20 flex items-center justify-center flex-shrink-0">
-                    <ach.icon className="text-[#ef745c]" size={20} />
+            {loading ? (
+              <div className="space-y-6">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="glass-card rounded-2xl p-6 flex items-start gap-4 animate-pulse">
+                    <div className="w-12 h-12 rounded-xl bg-white/[0.03]" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-5 w-3/4 bg-white/[0.03] rounded" />
+                      <div className="h-4 w-full bg-white/[0.03] rounded" />
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="text-lg font-medium">{ach.title}</h4>
-                    <p className="text-[#71717a] text-sm mt-1">
-                      {ach.description}
-                    </p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : achievements.length === 0 ? null : (
+              <div className="space-y-6">
+                {achievements.map((ach, index) => (
+                  <motion.div
+                    key={ach.id}
+                    initial={{ opacity: 0, x: 30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className="glass-card rounded-2xl p-6 flex items-start gap-4 hover:border-[#ef745c]/30 transition-colors"
+                  >
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#ef745c]/20 to-[#34073d]/20 flex items-center justify-center flex-shrink-0">
+                      <Award className="text-[#ef745c]" size={20} />
+                    </div>
+                    <div>
+                      <h4 className="text-lg font-medium">{ach.title}</h4>
+                      <p className="text-[#71717a] text-sm mt-1">
+                        {ach.description}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
