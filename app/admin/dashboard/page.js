@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { LogOut, Mail, Globe, Monitor, Clock, FileText, Briefcase, Code2, BarChart3, Award, Activity } from "lucide-react";
+import { LogOut, Mail, Globe, Monitor, Clock, FileText, Briefcase, Code2, BarChart3, Award, Activity, Trash2 } from "lucide-react";
 import Link from "next/link";
 
 const SEEN_KEY = "admin_seen_ids";
@@ -60,6 +60,19 @@ export default function AdminDashboard() {
       setLoading(false);
     }
   }, []);
+
+  const handleDelete = async (id) => {
+    if (!confirm("Delete this message?")) return;
+    try {
+      const res = await fetch(`/api/messages/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${tokenRef.current}` },
+      });
+      if (res.ok) setMessages((prev) => prev.filter((m) => m.id !== id));
+    } catch {
+      console.error("Failed to delete message");
+    }
+  };
 
   const markAsSeen = (id) => {
     const updated = new Set(seenIds);
@@ -153,9 +166,18 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                   <p className="text-[#aaaaaa] text-sm leading-relaxed mb-4">{msg.message}</p>
-                  <div className="flex items-center gap-4 text-[#444444] text-[11px]">
-                    <span className="flex items-center gap-1"><Globe size={11} /> {msg.ip}</span>
-                    <span className="flex items-center gap-1"><Monitor size={11} /> {msg.user_agent?.slice(0, 50)}...</span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4 text-[#444444] text-[11px]">
+                      <span className="flex items-center gap-1"><Globe size={11} /> {msg.ip}</span>
+                      <span className="flex items-center gap-1"><Monitor size={11} /> {msg.user_agent?.slice(0, 50)}...</span>
+                    </div>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleDelete(msg.id); }}
+                      className="text-[#444444] hover:text-red-400 transition-colors p-1"
+                      title="Delete message"
+                    >
+                      <Trash2 size={14} />
+                    </button>
                   </div>
                 </motion.div>
               );
