@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { LogOut, Mail, Globe, Monitor, Clock, FileText, Briefcase, Code2, BarChart3, Award, Activity, Trash2 } from "lucide-react";
 import Link from "next/link";
+import AdminBackground from "@/components/AdminBackground";
 
 const SEEN_KEY = "admin_seen_ids";
 
@@ -89,35 +90,38 @@ export default function AdminDashboard() {
   if (!authenticated) return null;
 
   return (
-    <div className="min-h-screen bg-black">
-      <div className="max-w-6xl mx-auto px-6 pt-16 pb-10">
+    <div className="min-h-screen bg-black relative">
+      <AdminBackground />
+      <div className="max-w-6xl mx-auto px-6 pt-16 pb-10 relative z-10">
         <h1 className="text-2xl font-[family-name:var(--font-heading)] text-white mb-10">ADMIN DASHBOARD</h1>
 
-        <div className="flex flex-wrap items-center justify-between gap-2 mb-10">
-          <Link href="/admin/dashboard" className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 text-[#888888] text-xs tracking-[0.15em] uppercase hover:border-white/30 hover:text-white transition-all">
-            <Mail size={14} /> Messages
-          </Link>
-          <Link href="/admin/skills" className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 text-[#888888] text-xs tracking-[0.15em] uppercase hover:border-white/30 hover:text-white transition-all">
-            <Code2 size={14} /> Skills
-          </Link>
-          <Link href="/admin/achievements" className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 text-[#888888] text-xs tracking-[0.15em] uppercase hover:border-white/30 hover:text-white transition-all">
-            <Award size={14} /> Achievements
-          </Link>
-          <Link href="/admin/activity" className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 text-[#888888] text-xs tracking-[0.15em] uppercase hover:border-white/30 hover:text-white transition-all">
-            <Activity size={14} /> Activity
-          </Link>
-          <Link href="/admin/works" className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 text-[#888888] text-xs tracking-[0.15em] uppercase hover:border-white/30 hover:text-white transition-all">
-            <Briefcase size={14} /> Works
-          </Link>
-          <Link href="/admin/blogs" className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 text-[#888888] text-xs tracking-[0.15em] uppercase hover:border-white/30 hover:text-white transition-all">
-            <FileText size={14} /> Blogs
-          </Link>
-          <Link href="/admin/overview" className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 text-[#888888] text-xs tracking-[0.15em] uppercase hover:border-white/30 hover:text-white transition-all">
-            <BarChart3 size={14} /> Overview
-          </Link>
-          <motion.button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 text-[#888888] text-xs tracking-[0.15em] uppercase hover:border-white/30 hover:text-white transition-all" whileHover={{ scale: 1.02 }}>
-            <LogOut size={14} /> Logout
-          </motion.button>
+        <div className="-mx-5 mb-10 p-5 rounded-2xl border border-white/[0.06] bg-white/[0.03] backdrop-blur-xl">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <Link href="/admin/dashboard" className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 text-[#888888] text-xs tracking-[0.15em] uppercase hover:border-white/30 hover:text-white transition-all">
+              <Mail size={14} /> Messages
+            </Link>
+            <Link href="/admin/skills" className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 text-[#888888] text-xs tracking-[0.15em] uppercase hover:border-white/30 hover:text-white transition-all">
+              <Code2 size={14} /> Skills
+            </Link>
+            <Link href="/admin/achievements" className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 text-[#888888] text-xs tracking-[0.15em] uppercase hover:border-white/30 hover:text-white transition-all">
+              <Award size={14} /> Achievements
+            </Link>
+            <Link href="/admin/activity" className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 text-[#888888] text-xs tracking-[0.15em] uppercase hover:border-white/30 hover:text-white transition-all">
+              <Activity size={14} /> Activity
+            </Link>
+            <Link href="/admin/works" className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 text-[#888888] text-xs tracking-[0.15em] uppercase hover:border-white/30 hover:text-white transition-all">
+              <Briefcase size={14} /> Works
+            </Link>
+            <Link href="/admin/blogs" className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 text-[#888888] text-xs tracking-[0.15em] uppercase hover:border-white/30 hover:text-white transition-all">
+              <FileText size={14} /> Blogs
+            </Link>
+            <Link href="/admin/overview" className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 text-[#888888] text-xs tracking-[0.15em] uppercase hover:border-white/30 hover:text-white transition-all">
+              <BarChart3 size={14} /> Overview
+            </Link>
+            <motion.button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 text-[#888888] text-xs tracking-[0.15em] uppercase hover:border-white/30 hover:text-white transition-all" whileHover={{ scale: 1.02 }}>
+              <LogOut size={14} /> Logout
+            </motion.button>
+          </div>
         </div>
 
         <p className="text-[#888888] text-sm mb-8">
