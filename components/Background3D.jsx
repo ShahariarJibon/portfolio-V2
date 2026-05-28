@@ -12,6 +12,8 @@ export default function Background3D({ variant = "particles" }) {
     let animId;
     let mouseX = 0;
     let mouseY = 0;
+    let targetMouseX = 0;
+    let targetMouseY = 0;
     let time = 0;
 
     const resize = () => {
@@ -22,8 +24,8 @@ export default function Background3D({ variant = "particles" }) {
     window.addEventListener("resize", resize);
 
     const onMouse = (e) => {
-      mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-      mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+      targetMouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+      targetMouseY = (e.clientY / window.innerHeight - 0.5) * 2;
     };
     window.addEventListener("mousemove", onMouse);
 
@@ -40,13 +42,15 @@ export default function Background3D({ variant = "particles" }) {
 
       const animate = () => {
         time += 0.005;
+        mouseX += (targetMouseX - mouseX) * 0.02;
+        mouseY += (targetMouseY - mouseY) * 0.02;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         const sorted = [...particles].sort((a, b) => a.z - b.z);
 
         sorted.forEach((p) => {
-          p.x += p.speedX + mouseX * 0.2;
-          p.y += p.speedY + mouseY * 0.2;
+          p.x += p.speedX + mouseX * 0.08;
+          p.y += p.speedY + mouseY * 0.08;
           p.z += Math.sin(time + p.x * 0.01) * 0.3;
 
           if (p.x < 0) p.x = canvas.width;
