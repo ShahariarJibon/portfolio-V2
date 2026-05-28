@@ -86,6 +86,9 @@ export default function AdminDashboard() {
             </p>
           </div>
           <div className="flex items-center gap-3">
+            <Link href="/admin/dashboard" className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-white/10 text-[#888888] text-xs tracking-[0.15em] uppercase hover:border-white/30 hover:text-white transition-all">
+              <Mail size={14} /> Messages
+            </Link>
             <Link href="/admin/skills" className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-white/10 text-[#888888] text-xs tracking-[0.15em] uppercase hover:border-white/30 hover:text-white transition-all">
               <Code2 size={14} /> Skills
             </Link>
