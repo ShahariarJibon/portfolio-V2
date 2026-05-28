@@ -3,10 +3,14 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ExternalLink, GitBranch, ArrowUpRight } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import AuthModal from "@/components/AuthModal";
 
 export default function Projects() {
+  const { user } = useAuth();
   const [works, setWorks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
 
   useEffect(() => {
     fetch("/api/works")
@@ -114,26 +118,22 @@ export default function Projects() {
                 )}
                 <div className="flex gap-6">
                   {project.demo_url && (
-                    <a
-                      href={project.demo_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <button
+                      onClick={() => user ? window.open(project.demo_url, "_blank") : setAuthModalOpen(true)}
                       className="inline-flex items-center gap-2 text-xs tracking-[0.15em] uppercase text-white hover:text-[#888888] transition-colors duration-300"
                     >
                       <ExternalLink size={14} />
                       Live Demo
-                    </a>
+                    </button>
                   )}
                   {project.code_url && (
-                    <a
-                      href={project.code_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <button
+                      onClick={() => user ? window.open(project.code_url, "_blank") : setAuthModalOpen(true)}
                       className="inline-flex items-center gap-2 text-xs tracking-[0.15em] uppercase text-[#888888] hover:text-white transition-colors duration-300"
                     >
                       <GitBranch size={14} />
                       Code
-                    </a>
+                    </button>
                   )}
                 </div>
               </div>
@@ -157,6 +157,8 @@ export default function Projects() {
           </a>
         </motion.div>
       </div>
+
+      <AuthModal open={authModalOpen} onClose={() => setAuthModalOpen(false)} />
     </section>
   );
 }
