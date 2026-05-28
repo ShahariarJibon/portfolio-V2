@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { LogOut, Mail, Globe, Monitor, Clock, FileText, Briefcase } from "lucide-react";
+import { LogOut, Mail, Globe, Monitor, Clock, FileText, Briefcase, Code2 } from "lucide-react";
 import Link from "next/link";
 
 const SEEN_KEY = "admin_seen_ids";
@@ -86,6 +86,9 @@ export default function AdminDashboard() {
             </p>
           </div>
           <div className="flex items-center gap-3">
+            <Link href="/admin/skills" className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-white/10 text-[#888888] text-xs tracking-[0.15em] uppercase hover:border-white/30 hover:text-white transition-all">
+              <Code2 size={14} /> Skills
+            </Link>
             <Link href="/admin/works" className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-white/10 text-[#888888] text-xs tracking-[0.15em] uppercase hover:border-white/30 hover:text-white transition-all">
               <Briefcase size={14} /> Works
             </Link>
