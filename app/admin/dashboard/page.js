@@ -124,9 +124,23 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <p className="text-[#888888] text-sm mb-8">
-          Total messages received: {messages.length}
-        </p>
+        <div className="flex items-center justify-between mb-8">
+          <p className="text-[#888888] text-sm">
+            Total messages received: {messages.length}
+          </p>
+          {messages.length > 0 && (
+            <button
+              onClick={() => {
+                const all = new Set(messages.map((m) => m.id));
+                setSeenIds(all);
+                saveSeenIds(all);
+              }}
+              className="text-xs tracking-[0.15em] uppercase text-[#ef745c] hover:text-white transition-colors"
+            >
+              Mark All Read
+            </button>
+          )}
+        </div>
 
         {loading ? (
           <div className="space-y-4">
