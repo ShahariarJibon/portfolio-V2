@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { validateUserToken } from "@/lib/userAuth";
 
-export async function POST(request, { params }) {
+export async function POST(request, segmentData) {
   try {
+    const { slug } = await segmentData.params;
     const token = request.headers.get("authorization")?.replace("Bearer ", "");
     const user = validateUserToken(token);
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -12,7 +13,7 @@ export async function POST(request, { params }) {
     const { data: blog } = await supabase
       .from("blogs")
       .select("id")
-      .eq("slug", params.slug)
+      .eq("slug", slug)
       .single();
     if (!blog) return NextResponse.json({ error: "Blog not found" }, { status: 404 });
 
@@ -35,13 +36,14 @@ export async function POST(request, { params }) {
   }
 }
 
-export async function GET(request, { params }) {
+export async function GET(request, segmentData) {
   try {
+    const { slug } = await segmentData.params;
     const supabase = getSupabase();
     const { data: blog } = await supabase
       .from("blogs")
       .select("id")
-      .eq("slug", params.slug)
+      .eq("slug", slug)
       .single();
     if (!blog) return NextResponse.json({ error: "Blog not found" }, { status: 404 });
 

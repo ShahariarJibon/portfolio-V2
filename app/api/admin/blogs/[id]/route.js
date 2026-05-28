@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { validateToken } from "@/lib/auth";
 
-export async function PUT(request, { params }) {
+export async function PUT(request, segmentData) {
   const token =
     request.cookies.get("admin_token")?.value ||
     request.headers.get("authorization")?.replace("Bearer ", "");
@@ -10,6 +10,7 @@ export async function PUT(request, { params }) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
+    const { id } = await segmentData.params;
     const body = await request.json();
     const updates = {};
     if (body.title !== undefined) {
@@ -28,7 +29,7 @@ export async function PUT(request, { params }) {
     const { data, error } = await supabase
       .from("blogs")
       .update(updates)
-      .eq("id", params.id)
+      .eq("id", id)
       .select()
       .single();
 
@@ -39,7 +40,7 @@ export async function PUT(request, { params }) {
   }
 }
 
-export async function DELETE(request, { params }) {
+export async function DELETE(request, segmentData) {
   const token =
     request.cookies.get("admin_token")?.value ||
     request.headers.get("authorization")?.replace("Bearer ", "");
@@ -47,10 +48,11 @@ export async function DELETE(request, { params }) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
+    const { id } = await segmentData.params;
     const supabase = getSupabase();
-    await supabase.from("blog_comments").delete().eq("blog_id", params.id);
-    await supabase.from("blog_reactions").delete().eq("blog_id", params.id);
-    await supabase.from("blogs").delete().eq("id", params.id);
+    await supabase.from("blog_comments").delete().eq("blog_id", id);
+    await supabase.from("blog_reactions").delete().eq("blog_id", id);
+    await supabase.from("blogs").delete().eq("id", id);
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

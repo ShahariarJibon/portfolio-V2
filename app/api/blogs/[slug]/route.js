@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 
-export async function GET(request, { params }) {
+export async function GET(request, segmentData) {
   try {
+    const { slug } = await segmentData.params;
     const supabase = getSupabase();
     const { data, error } = await supabase
       .from("blogs")
       .select("*")
-      .eq("slug", params.slug)
+      .eq("slug", slug)
       .single();
 
     if (error || !data)
