@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { LogOut, Mail, Globe, Monitor, Clock, FileText, Briefcase, Code2 } from "lucide-react";
+import { LogOut, Mail, Globe, Monitor, Clock, FileText, Briefcase, Code2, BarChart3 } from "lucide-react";
 import Link from "next/link";
 
 const SEEN_KEY = "admin_seen_ids";
@@ -94,6 +94,9 @@ export default function AdminDashboard() {
             </Link>
             <Link href="/admin/blogs" className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-white/10 text-[#888888] text-xs tracking-[0.15em] uppercase hover:border-white/30 hover:text-white transition-all">
               <FileText size={14} /> Blogs
+            </Link>
+            <Link href="/admin/overview" className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-white/10 text-[#888888] text-xs tracking-[0.15em] uppercase hover:border-white/30 hover:text-white transition-all">
+              <BarChart3 size={14} /> Overview
             </Link>
             <motion.button onClick={handleLogout} className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-white/10 text-[#888888] text-xs tracking-[0.15em] uppercase hover:border-white/30 hover:text-white transition-all" whileHover={{ scale: 1.02 }}>
               <LogOut size={14} /> Logout
