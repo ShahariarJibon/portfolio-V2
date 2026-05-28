@@ -11,7 +11,7 @@ export default function Projects() {
   useEffect(() => {
     fetch("/api/works")
       .then((r) => r.json())
-      .then((data) => setWorks(data.works || []))
+      .then((data) => setWorks((data.works || []).slice(0, 4)))
       .catch(() => setWorks([]))
       .finally(() => setLoading(false));
   }, []);

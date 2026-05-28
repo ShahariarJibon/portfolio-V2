@@ -8,8 +8,7 @@ export async function GET() {
       .from("works")
       .select("*")
       .eq("published", true)
-      .order("sort_order", { ascending: true })
-      .limit(4);
+      .order("sort_order", { ascending: true });
 
     if (error) throw error;
     return NextResponse.json({ works: data || [] });
