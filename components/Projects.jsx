@@ -149,9 +149,7 @@ export default function Projects() {
           className="text-center mt-12"
         >
           <a
-            href="https://github.com/ShahariarJibon?tab=repositories"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/works"
             className="inline-flex items-center gap-2 px-8 py-3 border border-white/20 text-xs tracking-[0.2em] uppercase text-white hover:bg-white hover:text-black transition-all duration-500"
           >
             View All Projects
