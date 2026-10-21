@@ -4,13 +4,13 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Plus, Edit3, Trash2, ArrowLeft, Eye, EyeOff, GripVertical } from "lucide-react";
+import { Plus, Edit3, Trash2, Eye, EyeOff } from "lucide-react";
 import AdminNav from "@/components/admin/AdminNav";
-import { DEFAULT_WORKS } from "@/app/api/works/route";
 
 export default function AdminWorks() {
-  const [works, setWorks] = useState(DEFAULT_WORKS);
-  const [loading, setLoading] = useState(false);
+  const [works, setWorks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState(null);
   const [authenticated, setAuthenticated] = useState(false);
   const router = useRouter();
 
@@ -23,23 +23,40 @@ export default function AdminWorks() {
 
   const fetchWorks = async (token) => {
     try {
+      setLoading(true);
       const res = await fetch("/api/admin/works", {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.status === 401) { localStorage.removeItem("admin_token"); router.push("/admin"); return; }
       const data = await res.json();
       setWorks(data.works || []);
-    } catch {} finally { setLoading(false); }
+    } catch {
+      setWorks([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDelete = async (id) => {
-    if (!confirm("Delete this work?")) return;
+    if (!confirm("Are you sure you want to delete this work?")) return;
     const token = localStorage.getItem("admin_token");
-    const res = await fetch(`/api/admin/works/${id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (res.ok) setWorks((p) => p.filter((w) => w.id !== id));
+    setDeletingId(id);
+    try {
+      const res = await fetch(`/api/admin/works/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        setWorks((p) => p.filter((w) => String(w.id) !== String(id)));
+      } else {
+        alert(data.error || "Failed to delete work item");
+      }
+    } catch {
+      alert("Network error: Could not delete work item");
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   const togglePublish = async (work) => {
@@ -113,7 +130,12 @@ export default function AdminWorks() {
                   <Link href={`/admin/works/${work.id}/edit`} className="p-2 rounded-xl text-[#555555] hover:text-white hover:bg-white/[0.04] transition-all">
                     <Edit3 size={16} />
                   </Link>
-                  <button onClick={() => handleDelete(work.id)} className="p-2 rounded-xl text-[#555555] hover:text-red-400 hover:bg-white/[0.04] transition-all">
+                  <button
+                    onClick={() => handleDelete(work.id)}
+                    disabled={deletingId === work.id}
+                    className="p-2 rounded-xl text-[#555555] hover:text-red-400 hover:bg-white/[0.04] transition-all disabled:opacity-30"
+                    title="Delete work"
+                  >
                     <Trash2 size={16} />
                   </button>
                 </div>

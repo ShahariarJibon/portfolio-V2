@@ -3,9 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ExternalLink, GitBranch, ArrowUpRight } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
-import AuthModal from "@/components/AuthModal";
-import { DEFAULT_WORKS } from "@/app/api/works/route";
+import { DEFAULT_WORKS } from "@/lib/defaultWorks";
 
 function getSafeUrl(url) {
   if (!url || typeof url !== "string") return "#";
@@ -17,16 +15,14 @@ function getSafeUrl(url) {
 }
 
 export default function Projects() {
-  const { user } = useAuth();
-  const [works, setWorks] = useState(DEFAULT_WORKS.slice(0, 4));
-  const [loading, setLoading] = useState(false);
-  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [works, setWorks] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch("/api/works")
       .then((r) => r.json())
       .then((data) => setWorks((data.works || []).slice(0, 4)))
-      .catch(() => setWorks([]))
+      .catch(() => setWorks(DEFAULT_WORKS.slice(0, 4)))
       .finally(() => setLoading(false));
   }, []);
 
@@ -128,22 +124,26 @@ export default function Projects() {
                 )}
                 <div className="flex gap-6">
                   {project.demo_url && (
-                    <button
-                      onClick={() => user ? window.open(project.demo_url, "_blank") : setAuthModalOpen(true)}
+                    <a
+                      href={getSafeUrl(project.demo_url)}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 text-xs tracking-[0.15em] uppercase text-white hover:text-[#888888] transition-colors duration-300"
                     >
                       <ExternalLink size={14} />
                       Live Demo
-                    </button>
+                    </a>
                   )}
                   {project.code_url && (
-                    <button
-                      onClick={() => user ? window.open(project.code_url, "_blank") : setAuthModalOpen(true)}
+                    <a
+                      href={getSafeUrl(project.code_url)}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 text-xs tracking-[0.15em] uppercase text-[#888888] hover:text-white transition-colors duration-300"
                     >
                       <GitBranch size={14} />
                       Code
-                    </button>
+                    </a>
                   )}
                 </div>
               </div>
@@ -167,8 +167,6 @@ export default function Projects() {
           </a>
         </motion.div>
       </div>
-
-      <AuthModal open={authModalOpen} onClose={() => setAuthModalOpen(false)} />
     </section>
   );
 }

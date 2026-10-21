@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { getSupabase } from "@/lib/supabase";
 import { validateToken } from "@/lib/auth";
+import { updateWork, deleteWork } from "@/lib/worksStore";
 
 export async function PUT(request, segmentData) {
   const token = request.cookies.get("admin_token")?.value ||
@@ -22,19 +22,11 @@ export async function PUT(request, segmentData) {
     if (body.sort_order !== undefined) updates.sort_order = Number(body.sort_order) || 0;
     if (body.published !== undefined) updates.published = Boolean(body.published);
 
-    const supabase = getSupabase();
-    const { data, error } = await supabase
-      .from("works")
-      .update(updates)
-      .eq("id", id)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return NextResponse.json({ work: data });
+    const updated = await updateWork(id, updates);
+    return NextResponse.json({ work: updated });
   } catch (error) {
     console.error("Admin works PUT error:", error);
-    return NextResponse.json({ error: "Failed to update work item" }, { status: 500 });
+    return NextResponse.json({ error: error.message || "Failed to update work item" }, { status: 500 });
   }
 }
 
@@ -46,10 +38,8 @@ export async function DELETE(request, segmentData) {
 
   try {
     const { id } = await segmentData.params;
-    const supabase = getSupabase();
-    const { error } = await supabase.from("works").delete().eq("id", id);
-    if (error) throw error;
-    return NextResponse.json({ success: true });
+    const result = await deleteWork(id);
+    return NextResponse.json(result);
   } catch (error) {
     console.error("Admin works DELETE error:", error);
     return NextResponse.json({ error: "Failed to delete work item" }, { status: 500 });
