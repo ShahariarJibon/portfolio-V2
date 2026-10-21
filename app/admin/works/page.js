@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = "force-dynamic";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -16,7 +17,10 @@ export default function AdminWorks() {
 
   useEffect(() => {
     const token = localStorage.getItem("admin_token");
-    if (!token) { router.push("/admin"); return; }
+    if (!token) {
+      router.push("/admin");
+      return;
+    }
     setAuthenticated(true);
     fetchWorks(token);
   }, []);
@@ -25,12 +29,19 @@ export default function AdminWorks() {
     try {
       setLoading(true);
       const res = await fetch("/api/admin/works?t=" + Date.now(), {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Cache-Control": "no-store",
+        },
         cache: "no-store",
       });
-      if (res.status === 401) { localStorage.removeItem("admin_token"); router.push("/admin"); return; }
+      if (res.status === 401) {
+        localStorage.removeItem("admin_token");
+        router.push("/admin");
+        return;
+      }
       const data = await res.json();
-      setWorks(data.works || []);
+      setWorks(Array.isArray(data.works) ? data.works : []);
     } catch {
       setWorks([]);
     } finally {
@@ -42,18 +53,31 @@ export default function AdminWorks() {
     if (!confirm("Are you sure you want to delete this work?")) return;
     const token = localStorage.getItem("admin_token");
     setDeletingId(id);
+
+    // Optimistically remove from state immediately
+    const prevWorks = [...works];
+    setWorks((prev) => prev.filter((w) => String(w.id).trim() !== String(id).trim()));
+
     try {
-      const res = await fetch(`/api/admin/works/${id}`, {
+      const res = await fetch(`/api/admin/works/${encodeURIComponent(id)}?t=${Date.now()}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Cache-Control": "no-store",
+        },
       });
+
       const data = await res.json().catch(() => ({}));
-      if (res.ok) {
-        setWorks((p) => p.filter((w) => String(w.id) !== String(id)));
-      } else {
+      if (!res.ok || data.success === false) {
+        // Rollback optimistic state if failed
+        setWorks(prevWorks);
         alert(data.error || "Failed to delete work item");
+      } else {
+        // Re-fetch to ensure complete sync with server
+        await fetchWorks(token);
       }
     } catch {
+      setWorks(prevWorks);
       alert("Network error: Could not delete work item");
     } finally {
       setDeletingId(null);
@@ -62,12 +86,20 @@ export default function AdminWorks() {
 
   const togglePublish = async (work) => {
     const token = localStorage.getItem("admin_token");
-    await fetch(`/api/admin/works/${work.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ published: !work.published }),
-    });
-    fetchWorks(token);
+    try {
+      await fetch(`/api/admin/works/${encodeURIComponent(work.id)}?t=${Date.now()}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+          "Cache-Control": "no-store",
+        },
+        body: JSON.stringify({ published: !work.published }),
+      });
+      await fetchWorks(token);
+    } catch (err) {
+      console.error("Toggle publish error:", err);
+    }
   };
 
   if (!authenticated) return null;
@@ -125,10 +157,18 @@ export default function AdminWorks() {
                   </p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
-                  <button onClick={() => togglePublish(work)} className="p-2 rounded-xl text-[#555555] hover:text-white hover:bg-white/[0.04] transition-all">
-                    {work.published ? <EyeOff size={16} /> : <Eye size={16} />}
+                  <button
+                    onClick={() => togglePublish(work)}
+                    className="p-2 rounded-xl text-[#555555] hover:text-white hover:bg-white/[0.04] transition-all"
+                    title={work.published ? "Hide from public site" : "Publish on public site"}
+                  >
+                    {work.published ? <Eye size={16} /> : <EyeOff size={16} />}
                   </button>
-                  <Link href={`/admin/works/${work.id}/edit`} className="p-2 rounded-xl text-[#555555] hover:text-white hover:bg-white/[0.04] transition-all">
+                  <Link
+                    href={`/admin/works/${work.id}/edit`}
+                    className="p-2 rounded-xl text-[#555555] hover:text-white hover:bg-white/[0.04] transition-all"
+                    title="Edit work"
+                  >
                     <Edit3 size={16} />
                   </Link>
                   <button
