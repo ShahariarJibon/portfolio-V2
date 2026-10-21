@@ -55,10 +55,10 @@ export default function AdminWorks() {
     setDeletingId(id);
 
     // Optimistically remove from state immediately
-    const prevWorks = [...works];
     setWorks((prev) => prev.filter((w) => String(w.id).trim() !== String(id).trim()));
 
     try {
+      // Primary: /api/admin/works/[id]
       const res = await fetch(`/api/admin/works/${encodeURIComponent(id)}?t=${Date.now()}`, {
         method: "DELETE",
         headers: {
@@ -67,18 +67,21 @@ export default function AdminWorks() {
         },
       });
 
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok || data.success === false) {
-        // Rollback optimistic state if failed
-        setWorks(prevWorks);
-        alert(data.error || "Failed to delete work item");
-      } else {
-        // Re-fetch to ensure complete sync with server
-        await fetchWorks(token);
+      // Fallback: /api/admin/works?id=...
+      if (!res.ok) {
+        await fetch(`/api/admin/works?id=${encodeURIComponent(id)}&t=${Date.now()}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Cache-Control": "no-store",
+          },
+        });
       }
-    } catch {
-      setWorks(prevWorks);
-      alert("Network error: Could not delete work item");
+
+      await fetchWorks(token);
+    } catch (err) {
+      console.error("Delete error:", err);
+      await fetchWorks(token);
     } finally {
       setDeletingId(null);
     }

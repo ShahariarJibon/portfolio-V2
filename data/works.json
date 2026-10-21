@@ -1,5 +1,21 @@
 [
   {
+    "id": "work-1",
+    "title": "AI TRANSLATOR",
+    "description": "Real-time AI-powered translation platform with support for 100+ languages, voice input, and document translation.",
+    "image_url": "/images/vasha.png",
+    "tag_lines": [
+      "JavaScript",
+      "HTML",
+      "CSS",
+      "API"
+    ],
+    "demo_url": "https://shahariarjibon.github.io/Translator-VASHA/",
+    "code_url": "https://github.com/ShahariarJibon/Translator-VASHA",
+    "sort_order": 0,
+    "published": true
+  },
+  {
     "id": "work-2",
     "title": "PixeLoom - Online Photo Editor",
     "description": "Advanced browser-based photo editor with filters, layers, and export capabilities.",

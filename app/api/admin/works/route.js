@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { validateToken } from "@/lib/auth";
-import { getAllWorks, createWork, DEFAULT_WORKS } from "@/lib/worksStore";
+import { getAllWorks, createWork, deleteWork, DEFAULT_WORKS } from "@/lib/worksStore";
 
 export { DEFAULT_WORKS };
 
@@ -8,7 +8,8 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export async function GET(request) {
-  const token = request.cookies.get("admin_token")?.value ||
+  const token =
+    request.cookies.get("admin_token")?.value ||
     request.headers.get("authorization")?.replace("Bearer ", "");
   if (!token || !validateToken(token))
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -28,7 +29,7 @@ export async function GET(request) {
   } catch (error) {
     console.error("Admin works GET error:", error);
     return NextResponse.json(
-      { works: DEFAULT_WORKS },
+      { works: [] },
       {
         headers: {
           "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
@@ -39,7 +40,8 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
-  const token = request.cookies.get("admin_token")?.value ||
+  const token =
+    request.cookies.get("admin_token")?.value ||
     request.headers.get("authorization")?.replace("Bearer ", "");
   if (!token || !validateToken(token))
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -62,9 +64,46 @@ export async function POST(request) {
       published: published ?? true,
     });
 
-    return NextResponse.json({ work: newWork });
+    return NextResponse.json(
+      { work: newWork },
+      {
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate",
+        },
+      }
+    );
   } catch (error) {
     console.error("Admin works POST error:", error);
     return NextResponse.json({ error: "Failed to save project work" }, { status: 500 });
+  }
+}
+
+// Also handle DELETE /api/admin/works?id=... as a fallback
+export async function DELETE(request) {
+  const token =
+    request.cookies.get("admin_token")?.value ||
+    request.headers.get("authorization")?.replace("Bearer ", "");
+  if (!token || !validateToken(token))
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  try {
+    const url = new URL(request.url);
+    const idFromQuery = url.searchParams.get("id");
+    const body = await request.json().catch(() => ({}));
+    const id = idFromQuery || body.id;
+
+    if (!id) {
+      return NextResponse.json({ error: "ID is required" }, { status: 400 });
+    }
+
+    const result = await deleteWork(id);
+    return NextResponse.json(result, {
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate",
+      },
+    });
+  } catch (error) {
+    console.error("Admin works DELETE (query) error:", error);
+    return NextResponse.json({ error: "Failed to delete work item" }, { status: 500 });
   }
 }
