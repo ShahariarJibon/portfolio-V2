@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { GraduationCap, Award } from "lucide-react";
+import { DEFAULT_ACHIEVEMENTS } from "@/app/api/achievements/route";
 
 const education = [
   {
@@ -14,8 +15,8 @@ const education = [
 ];
 
 export default function Education() {
-  const [achievements, setAchievements] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [achievements, setAchievements] = useState(DEFAULT_ACHIEVEMENTS);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetch("/api/achievements")

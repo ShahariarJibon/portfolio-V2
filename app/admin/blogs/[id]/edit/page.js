@@ -5,6 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowLeft, Plus, X } from "lucide-react";
+import AdminNav from "@/components/admin/AdminNav";
 
 export default function EditBlog() {
   const router = useRouter();
@@ -27,7 +28,7 @@ export default function EditBlog() {
     })
       .then((r) => r.json())
       .then((data) => {
-        const blog = (data.blogs || []).find((b) => b.id === id);
+        const blog = (data.blogs || []).find((b) => b.id === id || String(b.id) === String(id));
         if (blog) {
           setTitle(blog.title);
           setContent(blog.content);
@@ -93,11 +94,13 @@ export default function EditBlog() {
   return (
     <div className="min-h-screen bg-black">
       <div className="max-w-3xl mx-auto px-6 py-10">
+        <h1 className="text-2xl font-[family-name:var(--font-heading)] text-white mb-10">ADMIN DASHBOARD</h1>
+        <AdminNav />
         <Link href="/admin/blogs" className="inline-flex items-center gap-2 text-[#555555] text-xs tracking-[0.15em] uppercase hover:text-white transition-colors mb-8">
           <ArrowLeft size={14} /> Back to Blogs
         </Link>
 
-        <h1 className="text-2xl font-[family-name:var(--font-heading)] text-white mb-10">Edit Post</h1>
+        <h2 className="text-xl font-[family-name:var(--font-heading)] text-white mb-8">Edit Post</h2>
 
         <form onSubmit={handleSubmit} className="space-y-8">
           <div>

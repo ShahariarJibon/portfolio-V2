@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Plus, Edit3, Trash2, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import Background3D from "@/components/Background3D";
+import AdminNav from "@/components/admin/AdminNav";
 
 export default function AdminBlogs() {
   const [blogs, setBlogs] = useState([]);
@@ -57,12 +58,11 @@ export default function AdminBlogs() {
     <div className="min-h-screen bg-black relative">
       <Background3D variant="wave" />
       <div className="max-w-6xl mx-auto px-6 py-10 relative z-10">
-        <div className="flex items-center justify-between mb-12">
+        <h1 className="text-2xl font-[family-name:var(--font-heading)] text-white mb-10">ADMIN DASHBOARD</h1>
+        <AdminNav />
+        <div className="flex items-center justify-between mb-8">
           <div>
-            <Link href="/admin/dashboard" className="inline-flex items-center gap-2 text-[#555555] text-xs tracking-[0.15em] uppercase hover:text-white transition-colors mb-4">
-              <ArrowLeft size={14} /> Messages
-            </Link>
-            <h1 className="text-2xl font-[family-name:var(--font-heading)] text-white">Blogs</h1>
+            <h2 className="text-xl font-[family-name:var(--font-heading)] text-white">Blogs Management</h2>
             <p className="text-[#888888] text-sm mt-1">{blogs.length} post{blogs.length !== 1 ? "s" : ""}</p>
           </div>
           <Link

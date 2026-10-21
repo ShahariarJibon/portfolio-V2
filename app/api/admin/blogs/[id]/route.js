@@ -14,16 +14,17 @@ export async function PUT(request, segmentData) {
     const body = await request.json();
     const updates = {};
     if (body.title !== undefined) {
-      updates.title = body.title;
-      updates.slug = body.title
+      const titleStr = String(body.title).trim();
+      updates.title = titleStr;
+      updates.slug = titleStr
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/^-|-$/g, "");
     }
-    if (body.content !== undefined) updates.content = body.content;
-    if (body.cover_images !== undefined) updates.cover_images = body.cover_images;
-    if (body.tag_lines !== undefined) updates.tag_lines = body.tag_lines;
-    if (body.published !== undefined) updates.published = body.published;
+    if (body.content !== undefined) updates.content = String(body.content).trim();
+    if (body.cover_images !== undefined) updates.cover_images = Array.isArray(body.cover_images) ? body.cover_images : [];
+    if (body.tag_lines !== undefined) updates.tag_lines = Array.isArray(body.tag_lines) ? body.tag_lines : [];
+    if (body.published !== undefined) updates.published = Boolean(body.published);
 
     const supabase = getSupabase();
     const { data, error } = await supabase
@@ -36,7 +37,8 @@ export async function PUT(request, segmentData) {
     if (error) throw error;
     return NextResponse.json({ blog: data });
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("Admin blogs PUT error:", error);
+    return NextResponse.json({ error: "Failed to update blog post" }, { status: 500 });
   }
 }
 
@@ -52,9 +54,11 @@ export async function DELETE(request, segmentData) {
     const supabase = getSupabase();
     await supabase.from("blog_comments").delete().eq("blog_id", id);
     await supabase.from("blog_reactions").delete().eq("blog_id", id);
-    await supabase.from("blogs").delete().eq("id", id);
+    const { error } = await supabase.from("blogs").delete().eq("id", id);
+    if (error) throw error;
     return NextResponse.json({ success: true });
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("Admin blogs DELETE error:", error);
+    return NextResponse.json({ error: "Failed to delete blog post" }, { status: 500 });
   }
 }

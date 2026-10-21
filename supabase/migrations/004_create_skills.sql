@@ -30,66 +30,60 @@ ALTER TABLE skill_categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE skills ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tech_tags ENABLE ROW LEVEL SECURITY;
 
+-- Allow public read access (admin updates through server service_role key)
+DROP POLICY IF EXISTS "Public read skill_categories" ON skill_categories;
+DROP POLICY IF EXISTS "Admin all skill_categories" ON skill_categories;
 CREATE POLICY "Public read skill_categories" ON skill_categories FOR SELECT USING (true);
-CREATE POLICY "Admin all skill_categories" ON skill_categories FOR ALL USING (true) WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Public read skills" ON skills;
+DROP POLICY IF EXISTS "Admin all skills" ON skills;
 CREATE POLICY "Public read skills" ON skills FOR SELECT USING (true);
-CREATE POLICY "Admin all skills" ON skills FOR ALL USING (true) WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Public read tech_tags" ON tech_tags;
+DROP POLICY IF EXISTS "Admin all tech_tags" ON tech_tags;
 CREATE POLICY "Public read tech_tags" ON tech_tags FOR SELECT USING (true);
-CREATE POLICY "Admin all tech_tags" ON tech_tags FOR ALL USING (true) WITH CHECK (true);
 
 -- Seed categories
 INSERT INTO skill_categories (name, icon_name, sort_order) VALUES
 ('Frontend', 'Layout', 0),
-('Backend', 'Terminal', 1),
-('Database', 'Database', 2),
-('Tools', 'Wrench', 3)
+('Programming Languages', 'Code2', 1)
 ON CONFLICT DO NOTHING;
 
 -- Seed skills
 DO $$
-DECLARE cat_id UUID;
+DECLARE front_id UUID;
+DECLARE lang_id UUID;
 BEGIN
-  SELECT id INTO cat_id FROM skill_categories WHERE name = 'Frontend';
-  INSERT INTO skills (category_id, name, level, sort_order) VALUES
-    (cat_id, 'HTML', 95, 0),
-    (cat_id, 'CSS', 90, 1),
-    (cat_id, 'JavaScript', 92, 2),
-    (cat_id, 'React', 95, 3),
-    (cat_id, 'Next.js', 90, 4),
-    (cat_id, 'Tailwind CSS', 95, 5)
-  ON CONFLICT DO NOTHING;
+  SELECT id INTO front_id FROM skill_categories WHERE name = 'Frontend';
+  IF front_id IS NOT NULL THEN
+    INSERT INTO skills (category_id, name, level, sort_order) VALUES
+      (front_id, 'React', 92, 0),
+      (front_id, 'JavaScript', 90, 1),
+      (front_id, 'Tailwind CSS', 92, 2),
+      (front_id, 'HTML', 95, 3),
+      (front_id, 'CSS', 90, 4)
+    ON CONFLICT DO NOTHING;
+  END IF;
 
-  SELECT id INTO cat_id FROM skill_categories WHERE name = 'Backend';
-  INSERT INTO skills (category_id, name, level, sort_order) VALUES
-    (cat_id, 'Node.js', 88, 0),
-    (cat_id, 'Express.js', 85, 1)
-  ON CONFLICT DO NOTHING;
-
-  SELECT id INTO cat_id FROM skill_categories WHERE name = 'Database';
-  INSERT INTO skills (category_id, name, level, sort_order) VALUES
-    (cat_id, 'MongoDB', 85, 0),
-    (cat_id, 'Supabase', 80, 1)
-  ON CONFLICT DO NOTHING;
-
-  SELECT id INTO cat_id FROM skill_categories WHERE name = 'Tools';
-  INSERT INTO skills (category_id, name, level, sort_order) VALUES
-    (cat_id, 'Git', 90, 0),
-    (cat_id, 'GitHub', 92, 1),
-    (cat_id, 'VS Code', 95, 2),
-    (cat_id, 'Figma', 75, 3)
-  ON CONFLICT DO NOTHING;
+  SELECT id INTO lang_id FROM skill_categories WHERE name = 'Programming Languages';
+  IF lang_id IS NOT NULL THEN
+    INSERT INTO skills (category_id, name, level, sort_order) VALUES
+      (lang_id, 'C++', 88, 0),
+      (lang_id, 'C', 85, 1),
+      (lang_id, 'Java', 85, 2),
+      (lang_id, 'JavaScript', 90, 3)
+    ON CONFLICT DO NOTHING;
+  END IF;
 END $$;
 
 -- Seed tech tags
 INSERT INTO tech_tags (name, sort_order) VALUES
 ('React', 0),
-('Next.js', 1),
-('TypeScript', 2),
-('Node.js', 3),
-('MongoDB', 4),
-('PostgreSQL', 5),
-('AWS', 6),
-('Docker', 7)
+('JavaScript', 1),
+('Tailwind CSS', 2),
+('HTML', 3),
+('CSS', 4),
+('C++', 5),
+('C', 6),
+('Java', 7)
 ON CONFLICT DO NOTHING;

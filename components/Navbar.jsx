@@ -1,10 +1,24 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, User, LogOut } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import AuthModal from "@/components/AuthModal";
+import DinoGameModal from "@/components/DinoGameModal";
+
+function DinoIcon({ className = "w-4 h-4" }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+    >
+      <path d="M14 2h7v7h-2v2h3v3h-2v2h-2v2h-2v2h-1v2h2v2h-4v-2h2v-2h-2v-2h-2v-2h-2v-2H5v-2H3v-4h2V8h2V6h2V4h5V2zm2 3h-2v2h2V5z" />
+    </svg>
+  );
+}
 
 const navLinks = [
   { name: "Home", href: "#home" },
@@ -19,8 +33,11 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
+  const [showDinoGame, setShowDinoGame] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const { user, logout } = useAuth();
+  const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -40,6 +57,12 @@ export default function Navbar() {
 
   const handleNavClick = (e, href) => {
     if (href.startsWith("#")) {
+      if (pathname && pathname !== "/") {
+        e.preventDefault();
+        router.push("/" + href);
+        setIsMobileMenuOpen(false);
+        return;
+      }
       e.preventDefault();
       const element = document.querySelector(href);
       if (element) {
@@ -93,10 +116,10 @@ export default function Navbar() {
             ))}
 
             {user ? (
-              <div className="relative ml-4 user-menu-area">
+              <div className="relative ml-2 user-menu-area">
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex items-center gap-2 px-4 py-1.5 text-xs tracking-[0.15em] uppercase text-white rounded-full border border-white/20 hover:bg-white hover:text-black transition-all duration-500"
+                  className="flex items-center gap-2 px-4 py-1.5 text-xs tracking-[0.15em] uppercase text-white rounded-full border border-white/20 hover:bg-white hover:text-black transition-all duration-500 font-[family-name:var(--font-heading)]"
                 >
                   <User size={14} />
                   {user.email.split("@")[0]}
@@ -122,14 +145,79 @@ export default function Navbar() {
             ) : (
               <button
                 onClick={() => setShowAuth(true)}
-                className="ml-4 px-5 py-1.5 text-xs tracking-[0.15em] uppercase text-white rounded-full border border-white/20 hover:bg-white hover:text-black transition-all duration-500"
+                className="ml-2 px-5 py-1.5 text-xs tracking-[0.15em] uppercase text-white rounded-full border border-white/20 hover:bg-white hover:text-black transition-all duration-500 font-[family-name:var(--font-heading)]"
               >
                 Join
               </button>
             )}
+
+            {/* Glowing Circulating Dino Runner Button at Rightmost Position */}
+            <motion.button
+              onClick={() => setShowDinoGame(true)}
+              className="relative ml-3 group p-[2px] rounded-full overflow-hidden flex items-center justify-center shrink-0 cursor-pointer"
+              whileHover={{ scale: 1.06 }}
+              whileTap={{ scale: 0.95 }}
+              title="Play Chrome Dino Runner"
+            >
+              {/* Circulating luminous conic gradient beam */}
+              <span
+                className="absolute -inset-[150%] rounded-full animate-[spin_3s_linear_infinite]"
+                style={{
+                  background:
+                    "conic-gradient(from 0deg at 50% 50%, #ef745c 0deg, #ff9f43 70deg, transparent 130deg, transparent 230deg, #ef745c 360deg)",
+                }}
+              />
+              <span
+                className="absolute -inset-[150%] rounded-full animate-[spin_3s_linear_infinite] opacity-75 blur-[4px]"
+                style={{
+                  background:
+                    "conic-gradient(from 180deg at 50% 50%, #34073d 0deg, #ef745c 90deg, transparent 150deg, transparent 240deg, #34073d 360deg)",
+                }}
+              />
+
+              {/* Inner button surface */}
+              <span className="relative flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#0a0a0a] text-white text-xs font-[family-name:var(--font-heading)] tracking-[0.15em] uppercase border border-white/10 group-hover:bg-[#141414] transition-all shadow-[0_0_15px_rgba(239,116,92,0.35)]">
+                <DinoIcon className="w-4 h-4 text-[#ef745c] group-hover:scale-110 transition-transform duration-300 drop-shadow-[0_0_6px_#ef745c]" />
+                <span className="hidden sm:inline font-semibold">Play Dino</span>
+              </span>
+            </motion.button>
           </div>
 
-          <div className="flex items-center gap-3 md:hidden">
+          <div className="flex items-center gap-2 md:hidden">
+            {user ? (
+              <button
+                onClick={() => { logout(); }}
+                className="text-[#888888] hover:text-white transition-colors p-2"
+                title="Sign out"
+              >
+                <LogOut size={16} />
+              </button>
+            ) : (
+              <button
+                onClick={() => { setShowAuth(true); setIsMobileMenuOpen(false); }}
+                className="px-4 py-1 text-xs tracking-[0.15em] uppercase text-white rounded-full border border-white/20 hover:bg-white hover:text-black transition-all font-[family-name:var(--font-heading)]"
+              >
+                Join
+              </button>
+            )}
+
+            {/* Mobile Glowing Circulating Dino Button at Rightmost Position */}
+            <button
+              onClick={() => setShowDinoGame(true)}
+              className="relative p-[2px] rounded-full overflow-hidden flex items-center justify-center shrink-0"
+              title="Play Chrome Dino Game"
+            >
+              <span
+                className="absolute -inset-[150%] rounded-full animate-[spin_3s_linear_infinite]"
+                style={{
+                  background:
+                    "conic-gradient(from 0deg at 50% 50%, #ef745c 0deg, #ff9f43 90deg, transparent 140deg, transparent 240deg, #ef745c 360deg)",
+                }}
+              />
+              <span className="relative p-2 rounded-full bg-[#0a0a0a] text-[#ef745c] flex items-center justify-center shadow-[0_0_12px_rgba(239,116,92,0.4)]">
+                <DinoIcon className="w-4 h-4 drop-shadow-[0_0_6px_#ef745c]" />
+              </span>
+            </button>
             {user ? (
               <button
                 onClick={() => { logout(); }}
@@ -205,6 +293,7 @@ export default function Navbar() {
       </AnimatePresence>
 
       <AuthModal open={showAuth} onClose={() => setShowAuth(false)} />
+      <DinoGameModal isOpen={showDinoGame} onClose={() => setShowDinoGame(false)} />
     </>
   );
 }

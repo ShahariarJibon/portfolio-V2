@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { ArrowLeft, Heart, MessageCircle, Send, X, ChevronDown } from "lucide-react";
+import Navbar from "@/components/Navbar";
 import { useAuth } from "@/context/AuthContext";
 import AuthModal from "@/components/AuthModal";
 import Background3D from "@/components/Background3D";
@@ -242,9 +243,11 @@ export default function BlogPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-black relative">
-      <Background3D variant="particles" />
-      <div className="max-w-7xl mx-auto px-6 py-24 relative z-10">
+    <>
+      <Navbar />
+      <main className="min-h-screen bg-black relative pt-12">
+        <Background3D variant="particles" />
+        <div className="max-w-7xl mx-auto px-6 py-24 relative z-10">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-16">
           <Link href="/" className="inline-flex items-center gap-2 text-[#555555] text-xs tracking-[0.15em] uppercase hover:text-white transition-colors mb-8">
             <ArrowLeft size={14} /> Back to Portfolio
@@ -266,5 +269,6 @@ export default function BlogPage() {
         )}
       </div>
     </main>
+    </>
   );
 }

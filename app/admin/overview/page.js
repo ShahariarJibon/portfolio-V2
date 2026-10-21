@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowLeft, UserCheck, UserX, Mail, Clock } from "lucide-react";
+import AdminNav from "@/components/admin/AdminNav";
 
 export default function AdminOverview() {
   const [users, setUsers] = useState([]);
@@ -49,13 +50,12 @@ export default function AdminOverview() {
   return (
     <div className="min-h-screen bg-black">
       <div className="max-w-6xl mx-auto px-6 py-10">
-        <div className="flex items-center justify-between mb-12">
+        <h1 className="text-2xl font-[family-name:var(--font-heading)] text-white mb-10">ADMIN DASHBOARD</h1>
+        <AdminNav />
+        <div className="flex items-center justify-between mb-8">
           <div>
-            <Link href="/admin/dashboard" className="inline-flex items-center gap-2 text-[#555555] text-xs tracking-[0.15em] uppercase hover:text-white transition-colors mb-4">
-              <ArrowLeft size={14} /> Dashboard
-            </Link>
-            <h1 className="text-2xl font-[family-name:var(--font-heading)] text-white">Overview</h1>
-            <p className="text-[#888888] text-sm mt-1">Users & activity</p>
+            <h2 className="text-xl font-[family-name:var(--font-heading)] text-white">System Overview</h2>
+            <p className="text-[#888888] text-sm mt-1">Users & activity management</p>
           </div>
         </div>
 

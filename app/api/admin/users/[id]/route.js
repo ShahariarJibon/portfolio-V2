@@ -14,13 +14,14 @@ export async function PUT(request, segmentData) {
     const supabase = getSupabase();
     const { data, error } = await supabase
       .from("users")
-      .update({ is_blocked: body.is_blocked })
+      .update({ is_blocked: Boolean(body.is_blocked) })
       .eq("id", id)
       .select("id, email, created_at, is_blocked")
       .single();
     if (error) throw error;
     return NextResponse.json({ user: data });
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("Admin user block update error:", error);
+    return NextResponse.json({ error: "Failed to update user status" }, { status: 500 });
   }
 }

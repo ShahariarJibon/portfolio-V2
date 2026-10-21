@@ -5,6 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowLeft, Plus, X, Upload } from "lucide-react";
+import AdminNav from "@/components/admin/AdminNav";
 
 export default function EditWork() {
   const router = useRouter();
@@ -30,7 +31,7 @@ export default function EditWork() {
     fetch(`/api/admin/works`, { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.json())
       .then((data) => {
-        const work = (data.works || []).find((w) => w.id === id);
+        const work = (data.works || []).find((w) => w.id === id || String(w.id) === String(id));
         if (work) {
           setTitle(work.title);
           setDescription(work.description || "");
@@ -107,11 +108,13 @@ export default function EditWork() {
   return (
     <div className="min-h-screen bg-black">
       <div className="max-w-3xl mx-auto px-6 py-10">
+        <h1 className="text-2xl font-[family-name:var(--font-heading)] text-white mb-10">ADMIN DASHBOARD</h1>
+        <AdminNav />
         <Link href="/admin/works" className="inline-flex items-center gap-2 text-[#555555] text-xs tracking-[0.15em] uppercase hover:text-white transition-colors mb-8">
           <ArrowLeft size={14} /> Back to Works
         </Link>
 
-        <h1 className="text-2xl font-[family-name:var(--font-heading)] text-white mb-10">Edit Work</h1>
+        <h2 className="text-xl font-[family-name:var(--font-heading)] text-white mb-8">Edit Work</h2>
 
         <form onSubmit={handleSubmit} className="space-y-8">
           <div>

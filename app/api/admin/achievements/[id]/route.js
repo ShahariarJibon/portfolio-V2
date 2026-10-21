@@ -12,9 +12,9 @@ export async function PUT(request, segmentData) {
     const { id } = await segmentData.params;
     const body = await request.json();
     const updates = {};
-    if (body.title !== undefined) updates.title = body.title;
-    if (body.description !== undefined) updates.description = body.description;
-    if (body.sort_order !== undefined) updates.sort_order = body.sort_order;
+    if (body.title !== undefined) updates.title = String(body.title).trim();
+    if (body.description !== undefined) updates.description = body.description ? String(body.description).trim() : null;
+    if (body.sort_order !== undefined) updates.sort_order = Number(body.sort_order) || 0;
 
     const supabase = getSupabase();
     const { data, error } = await supabase
@@ -26,7 +26,8 @@ export async function PUT(request, segmentData) {
     if (error) throw error;
     return NextResponse.json({ achievement: data });
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("Admin achievements PUT error:", error);
+    return NextResponse.json({ error: "Failed to update achievement" }, { status: 500 });
   }
 }
 
@@ -39,9 +40,11 @@ export async function DELETE(request, segmentData) {
   try {
     const { id } = await segmentData.params;
     const supabase = getSupabase();
-    await supabase.from("achievements").delete().eq("id", id);
+    const { error } = await supabase.from("achievements").delete().eq("id", id);
+    if (error) throw error;
     return NextResponse.json({ success: true });
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("Admin achievements DELETE error:", error);
+    return NextResponse.json({ error: "Failed to delete achievement" }, { status: 500 });
   }
 }

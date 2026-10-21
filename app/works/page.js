@@ -4,13 +4,24 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ExternalLink, GitBranch, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
+import Navbar from "@/components/Navbar";
 import { useAuth } from "@/context/AuthContext";
 import AuthModal from "@/components/AuthModal";
+import { DEFAULT_WORKS } from "@/app/api/works/route";
+
+function getSafeUrl(url) {
+  if (!url || typeof url !== "string") return "#";
+  const trimmed = url.trim();
+  if (trimmed.startsWith("https://") || trimmed.startsWith("http://") || trimmed.startsWith("/")) {
+    return trimmed;
+  }
+  return "#";
+}
 
 export default function WorksPage() {
   const { user } = useAuth();
-  const [works, setWorks] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [works, setWorks] = useState(DEFAULT_WORKS);
+  const [loading, setLoading] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
 
   useEffect(() => {
@@ -22,7 +33,9 @@ export default function WorksPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-black pt-28 pb-24">
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-black pt-28 pb-24">
       <div className="max-w-7xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -69,7 +82,7 @@ export default function WorksPage() {
                 className="group rounded-3xl overflow-hidden border border-white/[0.06] bg-white/[0.02] hover:shadow-[0_0_40px_rgba(255,255,255,0.12)] transition-all duration-500"
               >
                 <a
-                  href={project.demo_url || project.code_url || "#"}
+                  href={getSafeUrl(project.demo_url || project.code_url)}
                   target={project.demo_url || project.code_url ? "_blank" : undefined}
                   rel="noopener noreferrer"
                   className="block h-48 md:h-56 relative overflow-hidden bg-black"
@@ -146,8 +159,8 @@ export default function WorksPage() {
           </Link>
         </motion.div>
       </div>
-
-      <AuthModal open={authModalOpen} onClose={() => setAuthModalOpen(false)} />
     </div>
-  );
+    <AuthModal open={authModalOpen} onClose={() => setAuthModalOpen(false)} />
+  </>
+);
 }

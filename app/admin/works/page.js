@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Plus, Edit3, Trash2, ArrowLeft, Eye, EyeOff, GripVertical } from "lucide-react";
+import AdminNav from "@/components/admin/AdminNav";
+import { DEFAULT_WORKS } from "@/app/api/works/route";
 
 export default function AdminWorks() {
-  const [works, setWorks] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [works, setWorks] = useState(DEFAULT_WORKS);
+  const [loading, setLoading] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
   const router = useRouter();
 
@@ -55,12 +57,11 @@ export default function AdminWorks() {
   return (
     <div className="min-h-screen bg-black">
       <div className="max-w-6xl mx-auto px-6 py-10">
-        <div className="flex items-center justify-between mb-12">
+        <h1 className="text-2xl font-[family-name:var(--font-heading)] text-white mb-10">ADMIN DASHBOARD</h1>
+        <AdminNav />
+        <div className="flex items-center justify-between mb-8">
           <div>
-            <Link href="/admin/dashboard" className="inline-flex items-center gap-2 text-[#555555] text-xs tracking-[0.15em] uppercase hover:text-white transition-colors mb-4">
-              <ArrowLeft size={14} /> Dashboard
-            </Link>
-            <h1 className="text-2xl font-[family-name:var(--font-heading)] text-white">Works</h1>
+            <h2 className="text-xl font-[family-name:var(--font-heading)] text-white">Works Management</h2>
             <p className="text-[#888888] text-sm mt-1">{works.length} item{works.length !== 1 ? "s" : ""}</p>
           </div>
           <Link href="/admin/works/new" className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-white/10 text-white text-xs tracking-[0.15em] uppercase hover:bg-white hover:text-black transition-all">

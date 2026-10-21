@@ -10,13 +10,20 @@ export async function GET(request) {
 
   try {
     const supabase = getSupabase();
-    const { data, error } = await supabase
+    const fetchPromise = supabase
       .from("users")
       .select("id, email, created_at, is_blocked")
       .order("created_at", { ascending: false });
+
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Timeout")), 1500)
+    );
+
+    const { data, error } = await Promise.race([fetchPromise, timeoutPromise]);
     if (error) throw error;
     return NextResponse.json({ users: data || [] });
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("Admin users GET error:", error);
+    return NextResponse.json({ users: [] });
   }
 }

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { GitBranch, Star, GitCommit, Users, GitPullRequest, GitFork } from "lucide-react";
+import { DEFAULT_ACTIVITY } from "@/app/api/activity/route";
 
 const ICON_MAP = { GitCommit, Users, Star, GitBranch, GitPullRequest, GitFork };
 
@@ -11,8 +12,8 @@ function getIcon(name) {
 }
 
 export default function GitHubStats() {
-  const [data, setData] = useState({ stats: [], languages: [] });
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState(DEFAULT_ACTIVITY);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetch("/api/activity")

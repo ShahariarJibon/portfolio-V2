@@ -13,26 +13,26 @@ export async function GET(request) {
     }
 
     const supabase = getSupabase();
-    const { data, error } = await supabase
+    const fetchPromise = supabase
       .from("messages")
       .select("*")
       .order("created_at", { ascending: false })
       .limit(100);
 
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Timeout")), 1500)
+    );
+
+    const { data, error } = await Promise.race([fetchPromise, timeoutPromise]);
+
     if (error) {
-      console.error("Supabase fetch error:", error);
-      return NextResponse.json(
-        { error: "Failed to fetch messages" },
-        { status: 500 }
-      );
+      console.error("Supabase messages fetch error:", error);
+      return NextResponse.json({ messages: [] });
     }
 
-    return NextResponse.json({ messages: data });
+    return NextResponse.json({ messages: data || [] });
   } catch (error) {
     console.error("Messages API error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ messages: [] });
   }
 }

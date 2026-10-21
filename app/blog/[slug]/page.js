@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowLeft, Heart, MessageCircle, Send } from "lucide-react";
+import Navbar from "@/components/Navbar";
 import { useAuth } from "@/context/AuthContext";
 import AuthModal from "@/components/AuthModal";
 import Background3D from "@/components/Background3D";
@@ -76,38 +77,46 @@ export default function BlogPost() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-black relative">
-        <Background3D variant="particles" />
-        <div className="max-w-3xl mx-auto px-6 py-24 relative z-10">
-          <div className="animate-pulse space-y-6">
-            <div className="h-8 w-3/4 bg-white/[0.04] rounded" />
-            <div className="h-4 w-1/2 bg-white/[0.04] rounded" />
-            <div className="h-64 bg-white/[0.04] rounded-2xl" />
-            <div className="space-y-3">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="h-4 bg-white/[0.04] rounded" />
-              ))}
+      <>
+        <Navbar />
+        <main className="min-h-screen bg-black relative pt-12">
+          <Background3D variant="particles" />
+          <div className="max-w-3xl mx-auto px-6 py-24 relative z-10">
+            <div className="animate-pulse space-y-6">
+              <div className="h-8 w-3/4 bg-white/[0.04] rounded" />
+              <div className="h-4 w-1/2 bg-white/[0.04] rounded" />
+              <div className="h-64 bg-white/[0.04] rounded-2xl" />
+              <div className="space-y-3">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div key={i} className="h-4 bg-white/[0.04] rounded" />
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      </main>
+        </main>
+      </>
     );
   }
 
   if (!blog) {
     return (
-      <main className="min-h-screen bg-black flex items-center justify-center">
-        <p className="text-[#555555]">Blog not found</p>
-      </main>
+      <>
+        <Navbar />
+        <main className="min-h-screen bg-black flex items-center justify-center pt-24">
+          <p className="text-[#555555]">Blog not found</p>
+        </main>
+      </>
     );
   }
 
   const images = blog.cover_images || [];
 
   return (
-    <main className="min-h-screen bg-black relative">
-      <Background3D variant="particles" />
-      <div className="max-w-3xl mx-auto px-6 py-24 relative z-10">
+    <>
+      <Navbar />
+      <main className="min-h-screen bg-black relative pt-12">
+        <Background3D variant="particles" />
+        <div className="max-w-3xl mx-auto px-6 py-24 relative z-10">
         <Link
           href="/blog"
           className="inline-flex items-center gap-2 text-[#555555] text-xs tracking-[0.15em] uppercase hover:text-white transition-colors mb-12"
@@ -241,5 +250,6 @@ export default function BlogPost() {
 
       <AuthModal open={showAuth} onClose={() => setShowAuth(false)} />
     </main>
+    </>
   );
 }
