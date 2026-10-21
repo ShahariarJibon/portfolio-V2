@@ -57,6 +57,7 @@ export default function NewWork() {
     });
 
     if (res.ok) {
+      router.refresh();
       router.push("/admin/works");
     } else {
       const data = await res.json();

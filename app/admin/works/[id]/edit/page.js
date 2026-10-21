@@ -28,7 +28,10 @@ export default function EditWork() {
   useEffect(() => {
     const token = localStorage.getItem("admin_token");
     if (!token) { router.push("/admin"); return; }
-    fetch(`/api/admin/works`, { headers: { Authorization: `Bearer ${token}` } })
+    fetch(`/api/admin/works?t=${Date.now()}`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    })
       .then((r) => r.json())
       .then((data) => {
         const work = (data.works || []).find((w) => w.id === id || String(w.id) === String(id));
@@ -83,6 +86,7 @@ export default function EditWork() {
     });
 
     if (res.ok) {
+      router.refresh();
       router.push("/admin/works");
     } else {
       const data = await res.json();

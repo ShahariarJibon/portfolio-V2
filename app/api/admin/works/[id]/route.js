@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { validateToken } from "@/lib/auth";
 import { updateWork, deleteWork } from "@/lib/worksStore";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function PUT(request, segmentData) {
   const token = request.cookies.get("admin_token")?.value ||
     request.headers.get("authorization")?.replace("Bearer ", "");

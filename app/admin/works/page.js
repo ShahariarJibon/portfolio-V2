@@ -24,8 +24,9 @@ export default function AdminWorks() {
   const fetchWorks = async (token) => {
     try {
       setLoading(true);
-      const res = await fetch("/api/admin/works", {
+      const res = await fetch("/api/admin/works?t=" + Date.now(), {
         headers: { Authorization: `Bearer ${token}` },
+        cache: "no-store",
       });
       if (res.status === 401) { localStorage.removeItem("admin_token"); router.push("/admin"); return; }
       const data = await res.json();

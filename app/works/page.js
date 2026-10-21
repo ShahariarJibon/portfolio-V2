@@ -21,7 +21,7 @@ export default function WorksPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/works")
+    fetch("/api/works?t=" + Date.now(), { cache: "no-store" })
       .then((r) => r.json())
       .then((data) => setWorks(data.works || []))
       .catch(() => setWorks(DEFAULT_WORKS))

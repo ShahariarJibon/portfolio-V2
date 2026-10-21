@@ -19,7 +19,7 @@ export default function Projects() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/works")
+    fetch("/api/works?t=" + Date.now(), { cache: "no-store" })
       .then((r) => r.json())
       .then((data) => setWorks((data.works || []).slice(0, 4)))
       .catch(() => setWorks(DEFAULT_WORKS.slice(0, 4)))

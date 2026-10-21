@@ -4,6 +4,9 @@ import { getAllWorks, createWork, DEFAULT_WORKS } from "@/lib/worksStore";
 
 export { DEFAULT_WORKS };
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function GET(request) {
   const token = request.cookies.get("admin_token")?.value ||
     request.headers.get("authorization")?.replace("Bearer ", "");
@@ -12,10 +15,26 @@ export async function GET(request) {
 
   try {
     const works = await getAllWorks({ publishedOnly: false });
-    return NextResponse.json({ works });
+    return NextResponse.json(
+      { works },
+      {
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+          "CDN-Cache-Control": "no-store",
+          "Vercel-CDN-Cache-Control": "no-store",
+        },
+      }
+    );
   } catch (error) {
     console.error("Admin works GET error:", error);
-    return NextResponse.json({ works: DEFAULT_WORKS });
+    return NextResponse.json(
+      { works: DEFAULT_WORKS },
+      {
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+        },
+      }
+    );
   }
 }
 
